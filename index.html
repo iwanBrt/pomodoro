@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pomodoro Mobile Pro</title>
+    <title>Pomodoro Lofi Tube</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -12,7 +12,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Hilangkan highlight biru di HP */
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -20,11 +20,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(45deg, #FF9A9E, #FECFEF, #E0C3FC, #8EC5FC);
+            background: linear-gradient(45deg, #2b5876, #4e4376, #ff9a9e, #fecfef);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             color: white;
-            padding: 15px; /* Padding lebih kecil untuk HP */
+            padding: 15px;
         }
 
         @keyframes gradientBG {
@@ -34,15 +34,15 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 24px;
             padding: 30px 20px;
             width: 100%;
-            max-width: 420px; /* Lebar maksimal */
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 420px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center;
         }
 
@@ -51,7 +51,7 @@
             display: inline-block;
             padding: 8px 20px;
             border-radius: 50px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             font-size: 0.9rem;
             margin-bottom: 15px;
             letter-spacing: 1px;
@@ -60,10 +60,10 @@
         }
 
         .timer-display {
-            font-size: 4rem; /* Ukuran font disesuaikan agar muat di HP */
+            font-size: 4rem;
             font-weight: 600;
             margin: 10px 0;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .controls {
@@ -81,62 +81,32 @@
             cursor: pointer;
             font-weight: 600;
             transition: transform 0.2s;
-            touch-action: manipulation; /* Optimasi touch di HP */
         }
-
         button:active { transform: scale(0.95); }
 
-        .btn-start {
-            background: #ffffff;
-            color: #6a11cb;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            flex: 1; /* Tombol memenuhi ruang */
-        }
-
-        .btn-reset {
-            background: rgba(255, 255, 255, 0.25);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.4);
-        }
+        .btn-start { background: white; color: #4e4376; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1; }
+        .btn-reset { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255,255,255,0.4); }
 
         /* --- SETTINGS --- */
         .settings {
             display: flex;
-            justify-content: space-between;
             gap: 10px;
             margin-bottom: 25px;
             padding: 15px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
             border-radius: 16px;
         }
 
         .input-group { flex: 1; }
-        
-        .input-group label {
-            display: block;
-            font-size: 0.75rem;
-            margin-bottom: 5px;
-        }
-
+        .input-group label { display: block; font-size: 0.75rem; margin-bottom: 5px; }
         input[type="number"] {
-            width: 100%;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            color: white;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1rem;
+            width: 100%; background: rgba(255,255,255,0.2); border: none; padding: 8px;
+            border-radius: 8px; color: white; text-align: center; font-weight: bold; font-size: 1rem;
         }
 
         /* --- AUDIO SECTION --- */
-        .audio-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.3);
-        }
-
+        .audio-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); }
+        
         .audio-controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -145,82 +115,42 @@
         }
 
         .audio-btn {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            padding: 10px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1); color: white; padding: 10px;
+            font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);
         }
+        .audio-btn.active { background: #fff; color: #4e4376; }
 
-        .audio-btn.active {
-            background: #fff;
-            color: #4facfe;
-        }
-
-        /* Tombol upload khusus */
         .upload-btn-label {
-            grid-column: span 2;
-            background: rgba(255,255,255,0.1);
-            border: 1px dashed rgba(255,255,255,0.6);
-            color: white;
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: block;
+            grid-column: span 2; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.6);
+            padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.9rem;
         }
-        
+
         /* --- TASKS --- */
-        .task-input-box {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
+        .task-input-box { display: flex; gap: 8px; margin-bottom: 15px; }
         #taskInput {
-            flex-grow: 1;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255,255,255,0.25);
-            color: white;
-            outline: none;
+            flex-grow: 1; padding: 12px; border-radius: 12px; border: none;
+            background: rgba(255,255,255,0.2); color: white; outline: none;
         }
-
-        #taskInput::placeholder { color: rgba(255,255,255,0.7); }
-
-        .task-list {
-            list-style: none;
-            max-height: 150px;
-            overflow-y: auto;
-            text-align: left;
-        }
-
+        #taskInput::placeholder { color: rgba(255,255,255,0.6); }
+        .task-list { list-style: none; max-height: 150px; overflow-y: auto; text-align: left; }
         .task-item {
-            background: rgba(0,0,0,0.1);
-            margin-bottom: 8px;
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
+            background: rgba(0,0,0,0.2); margin-bottom: 8px; padding: 10px;
+            border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;
         }
-        
         .task-item.completed span { text-decoration: line-through; opacity: 0.6; }
 
-        /* Media Query untuk HP Layar Kecil */
-        @media (max-width: 380px) {
-            .timer-display { font-size: 3.5rem; }
-            .container { padding: 20px 15px; }
-        }
+        /* Hidden YouTube Container */
+        #youtube-player-container { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
     </style>
 </head>
 <body>
 
+    <div id="youtube-player-container">
+        <div id="player"></div>
+    </div>
+
     <div class="container">
         <div class="status-badge" id="mode-text">🔥 Mode Fokus</div>
-        
         <div class="timer-display" id="timer">25:00</div>
 
         <div class="controls">
@@ -249,25 +179,140 @@
             <div style="font-size:0.8rem; margin-bottom:10px; opacity:0.8;">AUDIO ZONE</div>
             
             <div class="audio-controls">
-                <button class="audio-btn" id="btn-rain" onclick="togglePresetAudio('rain')">🌧️ Hujan</button>
-                <button class="audio-btn" id="btn-lofi" onclick="togglePresetAudio('lofi')">🎧 Lo-Fi</button>
+                <button class="audio-btn" id="btn-rain" onclick="toggleRain()">🌧️ Hujan Deras</button>
+                <button class="audio-btn" id="btn-lofi" onclick="toggleYoutubeMusic()">🎧 Youtube Lofi</button>
                 
-                <label for="customFile" class="upload-btn-label" id="uploadLabel">
-                    📂 Pilih Lagu Sendiri
-                </label>
+                <label for="customFile" class="upload-btn-label" id="uploadLabel">📂 File Sendiri</label>
                 <input type="file" id="customFile" accept="audio/*" style="display:none" onchange="handleFileUpload(this)">
                 
                 <button class="audio-btn" id="btn-custom" onclick="toggleCustomAudio()" style="display:none; grid-column: span 2; background: rgba(255,215,0,0.3); border-color: gold;">
-                    ▶️ Putar Lagu Saya
+                    ▶️ Putar File Saya
                 </button>
             </div>
             
-            <input type="range" style="width:100%" min="0" max="1" step="0.05" value="0.5" oninput="changeVolume(this.value)">
+            <input type="range" id="volSlider" style="width:100%" min="0" max="100" value="50" oninput="changeVolume(this.value)">
         </div>
     </div>
 
     <script>
-        // --- 1. TIMER & AUTO START LOGIC ---
+        // --- 1. YOUTUBE API SETUP ---
+        // Kita menggunakan YouTube IFrame API agar bisa memutar link YouTube di background
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        var isYoutubeReady = false;
+        var isYoutubePlaying = false;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '200',
+                width: '200',
+                videoId: 'uaNrFn17YtI', // ID Video dari Link yang kamu kasih
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'uaNrFn17YtI' // Diperlukan agar looping bekerja
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            isYoutubeReady = true;
+            event.target.setVolume(50); // Volume awal 50%
+        }
+
+        function toggleYoutubeMusic() {
+            const btn = document.getElementById('btn-lofi');
+            
+            if (!isYoutubeReady) {
+                alert("Tunggu sebentar, memuat YouTube...");
+                return;
+            }
+
+            if (isYoutubePlaying) {
+                player.pauseVideo();
+                btn.classList.remove('active');
+                btn.textContent = "🎧 Youtube Lofi";
+            } else {
+                player.playVideo();
+                btn.classList.add('active');
+                btn.textContent = "⏸️ Youtube Lofi";
+            }
+            isYoutubePlaying = !isYoutubePlaying;
+        }
+
+        // --- 2. AUDIO HUJAN (SUMBER BARU) ---
+        // Menggunakan Google Sounds agar lebih stabil
+        const audioRain = new Audio('https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg');
+        audioRain.loop = true;
+        let isRainPlaying = false;
+
+        function toggleRain() {
+            const btn = document.getElementById('btn-rain');
+            if (isRainPlaying) {
+                audioRain.pause();
+                btn.classList.remove('active');
+            } else {
+                audioRain.play().catch(e => alert("Klik di layar dulu agar audio bisa jalan!"));
+                btn.classList.add('active');
+            }
+            isRainPlaying = !isRainPlaying;
+        }
+
+        // --- 3. CUSTOM AUDIO ---
+        let audioCustom = new Audio();
+        audioCustom.loop = true;
+        let isCustomPlaying = false;
+
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                audioCustom.src = URL.createObjectURL(file);
+                document.getElementById('uploadLabel').style.display = 'none';
+                const btnCustom = document.getElementById('btn-custom');
+                btnCustom.style.display = 'block';
+                btnCustom.textContent = "▶️ Putar: " + file.name.substring(0, 15) + "...";
+                isCustomPlaying = false;
+            }
+        }
+
+        function toggleCustomAudio() {
+            const btn = document.getElementById('btn-custom');
+            if (isCustomPlaying) {
+                audioCustom.pause();
+                btn.textContent = btn.textContent.replace("⏸️", "▶️");
+                btn.classList.remove('active');
+            } else {
+                audioCustom.play();
+                btn.textContent = btn.textContent.replace("▶️", "⏸️");
+                btn.classList.add('active');
+            }
+            isCustomPlaying = !isCustomPlaying;
+        }
+
+        // --- 4. VOLUME CONTROL (SYNC SEMUA) ---
+        function changeVolume(val) {
+            // Val adalah 0 sampai 100
+            
+            // 1. Set volume Hujan & Custom (butuh range 0.0 - 1.0)
+            const decimalVol = val / 100;
+            audioRain.volume = decimalVol;
+            audioCustom.volume = decimalVol;
+
+            // 2. Set volume YouTube (butuh range 0 - 100)
+            if (isYoutubeReady) {
+                player.setVolume(val);
+            }
+        }
+
+        // --- 5. LOGIC TIMER (SAMA SEPERTI SEBELUMNYA) ---
         let timeLeft;
         let isRunning = false;
         let isFocusMode = true;
@@ -304,44 +349,32 @@
         }
 
         function startTimerInterval() {
-            clearInterval(timerId); // Bersihkan interval lama jika ada
+            clearInterval(timerId);
             timerId = setInterval(() => {
                 if (timeLeft > 0) {
                     timeLeft--;
                     updateDisplay();
                 } else {
-                    // Waktu habis
                     switchMode();
                 }
             }, 1000);
         }
 
         function switchMode() {
-            // Bunyikan Alarm
             playNotificationSound();
-
-            // Switch Mode
             isFocusMode = !isFocusMode;
-            
             if (isFocusMode) {
                 timeLeft = focusInput.value * 60;
                 modeText.textContent = "🔥 Mode Fokus";
-                modeText.style.background = "rgba(255, 255, 255, 0.3)";
+                modeText.style.background = "rgba(0,0,0,0.2)";
             } else {
                 timeLeft = breakInput.value * 60;
                 modeText.textContent = "☕ Waktunya Istirahat";
                 modeText.style.background = "rgba(105, 240, 174, 0.4)";
             }
             updateDisplay();
-
-            // --- FITUR AUTO START ---
-            // Kita tidak stop timer, tapi langsung lanjut hitung mundur mode baru
-            // Pastikan tombol tetap dalam keadaan "Pause" (karena sedang jalan)
             startBtn.textContent = "Pause";
             isRunning = true;
-            
-            // Interval tetap berjalan karena kita tidak memanggil clearInterval di sini
-            // Tapi untuk keamanan (sync), kita restart intervalnya
             startTimerInterval();
         }
 
@@ -356,22 +389,16 @@
         }
 
         function playNotificationSound() {
-            // Suara "Ting" Digital
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.connect(gain);
             gain.connect(ctx.destination);
-            
-            // Nada alarm (lebih tinggi dan berulang sedikit)
             osc.type = 'sine';
             osc.frequency.setValueAtTime(880, ctx.currentTime); 
             gain.gain.setValueAtTime(0.1, ctx.currentTime);
-            
             osc.start();
-            osc.stop(ctx.currentTime + 0.2); // Bunyi pendek
-            
-            // Bunyi kedua agar seperti alarm (Ting-Ting)
+            osc.stop(ctx.currentTime + 0.2);
             setTimeout(() => {
                 const osc2 = ctx.createOscillator();
                 const gain2 = ctx.createGain();
@@ -386,83 +413,9 @@
 
         focusInput.addEventListener('change', () => { if(!isRunning && isFocusMode) init(); });
 
-        // --- 2. LOGIC AUDIO (PRESET + USER UPLOAD) ---
-        const audioRain = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3');
-        const audioLofi = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112762.mp3');
-        
-        // Objek audio khusus untuk file user
-        let audioCustom = new Audio();
-        let isCustomPlaying = false;
-
-        audioRain.loop = true;
-        audioLofi.loop = true;
-        audioCustom.loop = true; // Musik user juga looping
-
-        function togglePresetAudio(type) {
-            if (type === 'rain') {
-                const btn = document.getElementById('btn-rain');
-                if (!audioRain.paused) {
-                    audioRain.pause();
-                    btn.classList.remove('active');
-                } else {
-                    audioRain.play();
-                    btn.classList.add('active');
-                }
-            } else if (type === 'lofi') {
-                const btn = document.getElementById('btn-lofi');
-                if (!audioLofi.paused) {
-                    audioLofi.pause();
-                    btn.classList.remove('active');
-                } else {
-                    audioLofi.play();
-                    btn.classList.add('active');
-                }
-            }
-        }
-
-        // --- FITUR UPLOAD FILE ---
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (file) {
-                // Buat URL sementara untuk file yang diupload
-                const fileURL = URL.createObjectURL(file);
-                audioCustom.src = fileURL;
-                
-                // Update tampilan tombol
-                document.getElementById('uploadLabel').style.display = 'none';
-                const btnCustom = document.getElementById('btn-custom');
-                btnCustom.style.display = 'block';
-                btnCustom.textContent = "▶️ Putar: " + file.name.substring(0, 15) + "...";
-                
-                // Reset status play
-                isCustomPlaying = false;
-            }
-        }
-
-        function toggleCustomAudio() {
-            const btn = document.getElementById('btn-custom');
-            if (isCustomPlaying) {
-                audioCustom.pause();
-                btn.textContent = btn.textContent.replace("⏸️", "▶️");
-                btn.classList.remove('active');
-            } else {
-                audioCustom.play();
-                btn.textContent = btn.textContent.replace("▶️", "⏸️");
-                btn.classList.add('active');
-            }
-            isCustomPlaying = !isCustomPlaying;
-        }
-
-        function changeVolume(val) {
-            audioRain.volume = val;
-            audioLofi.volume = val;
-            audioCustom.volume = val;
-        }
-
-        // --- 3. TASK LIST ---
+        // --- TASK LIST ---
         const taskInput = document.getElementById('taskInput');
         const taskList = document.getElementById('taskList');
-
         taskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
 
         function addTask() {
