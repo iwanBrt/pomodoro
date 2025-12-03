@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pomodoro Sempurna + Spotify</title>
+    <title>Pomodoro Flow + Scroll Fix</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
 
         * {
             margin: 0;
@@ -18,13 +18,21 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            align-items: center; /* Center secara vertikal jika konten pendek */
+            min-height: 100vh;   /* Minimal setinggi layar */
+            
+            /* BACKGROUND GRADIENT */
             background: linear-gradient(45deg, #2b5876, #4e4376, #ff9a9e, #fecfef);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
+            
             color: white;
-            padding: 15px;
+            padding: 20px;
+            
+            /* PERBAIKAN SCROLL HP DI SINI: */
+            overflow-x: hidden; /* Sembunyikan scroll samping saja */
+            overflow-y: auto;   /* Izinkan scroll atas-bawah */
+            position: relative;
         }
 
         @keyframes gradientBG {
@@ -33,395 +41,274 @@
             100% { background-position: 0% 50%; }
         }
 
-        .container {
+        /* --- BACKGROUND QUOTES ANIMATION --- */
+        .quote-bg-container {
+            position: fixed; /* Tetap diam di belakang saat discroll */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; 
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0;
+        }
+
+        .quote-lane {
+            position: relative;
+            width: 100%;
+            height: 50px; 
+            display: flex;
+            align-items: center;
+        }
+
+        .moving-text {
+            position: absolute;
+            white-space: nowrap;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.15); /* Transparan samar */
+            animation: flowLeft linear infinite;
+            left: 100%; 
+        }
+
+        @keyframes flowLeft {
+            from { transform: translateX(0); }
+            to { transform: translateX(-150vw); } 
+        }
+
+        /* Variasi Kecepatan */
+        .lane-1 .moving-text { animation-duration: 35s; font-size: 2.5rem; }
+        .lane-2 .moving-text { animation-duration: 50s; font-size: 1.5rem; animation-delay: -10s; }
+        .lane-3 .moving-text { animation-duration: 40s; font-size: 3rem; font-weight: 900; }
+        .lane-4 .moving-text { animation-duration: 60s; font-size: 1.2rem; animation-delay: -5s; }
+        .lane-5 .moving-text { animation-duration: 45s; font-size: 2rem; }
+        .lane-6 .moving-text { animation-duration: 30s; font-size: 1.8rem; animation-delay: -15s; }
+        .lane-7 .moving-text { animation-duration: 55s; font-size: 2.2rem; }
+
+
+        /* --- WRAPPER UTAMA --- */
+        .layout-wrapper {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 10; /* Konten di depan background */
+        }
+
+        /* --- GLASS STYLE --- */
+        .glass-box {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 24px;
-            padding: 30px 20px;
-            width: 100%;
-            max-width: 420px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .main-container {
+            flex: 1.5;
+            padding: 30px 20px;
             text-align: center;
-            max-height: 95vh;
+            /* Max height dihapus di HP nanti lewat media query agar flow natural */
+            max-height: 90vh; 
             overflow-y: auto;
         }
+        .main-container::-webkit-scrollbar { width: 5px; }
+        .main-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
 
-        .container::-webkit-scrollbar { width: 5px; }
-        .container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
-
-        /* --- TIMER --- */
-        .status-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 50px;
-            background: rgba(0, 0, 0, 0.2);
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .timer-display {
-            font-size: 4rem;
-            font-weight: 600;
-            margin: 10px 0;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .controls {
+        /* --- SIDEBAR --- */
+        .side-panel {
+            flex: 1;
+            padding: 20px;
             display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 25px;
+            flex-direction: column;
+            gap: 15px;
+            position: sticky;
+            top: 20px;
         }
 
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s;
+        /* --- RESPONSIF (FIX SCROLL HP) --- */
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-start; /* Mulai dari atas agar tidak terpotong */
+                height: auto; /* Biarkan tinggi menyesuaikan konten */
+            }
+            .layout-wrapper {
+                flex-direction: column;
+                align-items: center;
+                margin-top: 20px; 
+            }
+            .side-panel {
+                width: 100%;
+                position: static; /* Lepas sticky di HP */
+            }
+            .main-container {
+                width: 100%;
+                max-height: none; /* Biarkan memanjang ke bawah di HP */
+                overflow-y: visible;
+            }
         }
+
+        /* --- UI ELEMENTS --- */
+        .status-badge { display: inline-block; padding: 8px 20px; border-radius: 50px; background: rgba(0, 0, 0, 0.2); font-size: 0.9rem; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+        .timer-display { font-size: 4rem; font-weight: 600; margin: 10px 0; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 25px; }
+        button { padding: 12px 20px; border: none; border-radius: 12px; font-size: 1rem; cursor: pointer; font-weight: 600; transition: transform 0.2s, box-shadow 0.2s; }
         button:active { transform: scale(0.95); }
-
         .btn-start { background: white; color: #4e4376; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1; }
         .btn-reset { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255,255,255,0.4); }
 
-        /* --- SETTINGS --- */
-        .settings {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 16px;
-        }
-
+        .settings { display: flex; gap: 10px; margin-bottom: 25px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 16px; }
         .input-group { flex: 1; }
         .input-group label { display: block; font-size: 0.75rem; margin-bottom: 5px; }
-        input[type="number"] {
-            width: 100%; background: rgba(255,255,255,0.2); border: none; padding: 8px;
-            border-radius: 8px; color: white; text-align: center; font-weight: bold; font-size: 1rem;
-        }
+        input[type="number"] { width: 100%; background: rgba(255,255,255,0.2); border: none; padding: 8px; border-radius: 8px; color: white; text-align: center; font-weight: bold; font-size: 1rem; }
 
-        /* --- AUDIO SECTION --- */
         .audio-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); }
-        
-        .audio-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .audio-btn {
-            background: rgba(255,255,255,0.1); color: white; padding: 10px;
-            font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);
-        }
+        .audio-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .audio-btn { background: rgba(255,255,255,0.1); color: white; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2); }
         .audio-btn.active { background: #fff; color: #4e4376; }
+        .upload-btn-label { grid-column: span 2; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.6); padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; }
 
-        .upload-btn-label {
-            grid-column: span 2; background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.6);
-            padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.9rem;
-        }
-
-        /* --- SPOTIFY SECTION --- */
-        .spotify-wrapper {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.3);
-        }
-        iframe {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        /* --- TASKS --- */
         .task-input-box { display: flex; gap: 8px; margin-bottom: 15px; }
-        #taskInput {
-            flex-grow: 1; padding: 12px; border-radius: 12px; border: none;
-            background: rgba(255,255,255,0.2); color: white; outline: none;
-        }
+        #taskInput { flex-grow: 1; padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.2); color: white; outline: none; }
         #taskInput::placeholder { color: rgba(255,255,255,0.6); }
         .task-list { list-style: none; max-height: 150px; overflow-y: auto; text-align: left; }
-        .task-item {
-            background: rgba(0,0,0,0.2); margin-bottom: 8px; padding: 10px;
-            border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;
-        }
+        .task-item { background: rgba(0,0,0,0.2); margin-bottom: 8px; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
         .task-item.completed span { text-decoration: line-through; opacity: 0.6; }
+
+        .btn-collab { display: block; width: 100%; text-align: center; background: linear-gradient(90deg, #1DB954, #1ed760); color: white; text-decoration: none; padding: 12px; border-radius: 30px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-collab:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(29, 185, 84, 0.6); }
+        .btn-collab:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="status-badge" id="mode-text">🔥 Mode Fokus</div>
-        <div class="timer-display" id="timer">25:00</div>
-
-        <div class="controls">
-            <button class="btn-start" onclick="toggleTimer()" id="startBtn">Mulai</button>
-            <button class="btn-reset" onclick="resetTimer()">Reset</button>
+    <div class="quote-bg-container">
+        <div class="quote-lane lane-1">
+            <div class="moving-text">"Hidup adalah perjalanan."      "Jangan menyerah."      "Fokus pada tujuan."</div>
         </div>
+        <div class="quote-lane lane-2">
+            <div class="moving-text">"Disiplin adalah kunci."      "Satu langkah setiap hari."      "Semangat!"</div>
+        </div>
+        <div class="quote-lane lane-3">
+            <div class="moving-text">"Mimpi besar, kerja keras."      "Kamu bisa melakukannya."</div>
+        </div>
+        <div class="quote-lane lane-4">
+            <div class="moving-text">"Konsistensi itu penting."      "Belajar hal baru."      "Tetap tenang."</div>
+        </div>
+        <div class="quote-lane lane-5">
+            <div class="moving-text">"Hustle hard."      "Stay humble."      "Trust the process."</div>
+        </div>
+        <div class="quote-lane lane-6">
+            <div class="moving-text">"Istirahatlah jika lelah."      "Masa depan dimulai hari ini."</div>
+        </div>
+        <div class="quote-lane lane-7">
+            <div class="moving-text">"Be yourself."      "Keep pushing forward."      "Success is a journey."</div>
+        </div>
+    </div>
 
-        <div class="settings">
-            <div class="input-group">
-                <label>Fokus (menit)</label>
-                <input type="number" id="focusTime" value="25" min="1">
+    <div class="layout-wrapper">
+        
+        <div class="glass-box main-container">
+            <div class="status-badge" id="mode-text">🔥 Mode Fokus</div>
+            <div class="timer-display" id="timer">25:00</div>
+
+            <div class="controls">
+                <button class="btn-start" onclick="toggleTimer()" id="startBtn">Mulai</button>
+                <button class="btn-reset" onclick="resetTimer()">Reset</button>
             </div>
-            <div class="input-group">
-                <label>Istirahat (menit)</label>
-                <input type="number" id="breakTime" value="5" min="1">
+
+            <div class="settings">
+                <div class="input-group">
+                    <label>Fokus (menit)</label>
+                    <input type="number" id="focusTime" value="25" min="1">
+                </div>
+                <div class="input-group">
+                    <label>Istirahat (menit)</label>
+                    <input type="number" id="breakTime" value="5" min="1">
+                </div>
+            </div>
+
+            <div class="task-input-box">
+                <input type="text" id="taskInput" placeholder="Target hari ini...">
+                <button class="btn-start" style="flex: 0 0 50px;" onclick="addTask()">+</button>
+            </div>
+            <ul class="task-list" id="taskList"></ul>
+
+            <div class="audio-section">
+                <div style="font-size:0.8rem; margin-bottom:10px; opacity:0.8;">AUDIO FOKUS</div>
+                <div class="audio-controls">
+                    <button class="audio-btn" id="btn-rain" onclick="toggleRain()">🌧️ Hujan Deras</button>
+                    <button class="audio-btn" id="btn-sempurna" onclick="toggleSempurna()">🎵 Lagu Sempurna</button>
+                    <label for="customFile" class="upload-btn-label" id="uploadLabel">📂 Upload File Sendiri</label>
+                    <input type="file" id="customFile" accept="audio/*" style="display:none" onchange="handleFileUpload(this)">
+                    <button class="audio-btn" id="btn-custom" onclick="toggleCustomAudio()" style="display:none; grid-column: span 2; background: rgba(255,215,0,0.3); border-color: gold;">▶️ Putar File Saya</button>
+                </div>
+                <input type="range" id="volSlider" style="width:100%" min="0" max="100" value="50" oninput="changeVolume(this.value)">
             </div>
         </div>
 
-        <div class="task-input-box">
-            <input type="text" id="taskInput" placeholder="Target hari ini...">
-            <button class="btn-start" style="flex: 0 0 50px;" onclick="addTask()">+</button>
-        </div>
-        <ul class="task-list" id="taskList"></ul>
-
-        <div class="audio-section">
-            <div style="font-size:0.8rem; margin-bottom:10px; opacity:0.8;">AUDIO FOKUS</div>
+        <div class="glass-box side-panel">
+            <div style="font-size:0.9rem; font-weight:bold; opacity:0.9; text-align:center;">🎧 MOOD BOOSTER</div>
             
-            <div class="audio-controls">
-                <button class="audio-btn" id="btn-rain" onclick="toggleRain()">🌧️ Hujan Deras</button>
-                <button class="audio-btn" id="btn-sempurna" onclick="toggleSempurna()">🎵 Lagu Sempurna</button>
-                
-                <label for="customFile" class="upload-btn-label" id="uploadLabel">📂 Upload File Sendiri</label>
-                <input type="file" id="customFile" accept="audio/*" style="display:none" onchange="handleFileUpload(this)">
-                
-                <button class="audio-btn" id="btn-custom" onclick="toggleCustomAudio()" style="display:none; grid-column: span 2; background: rgba(255,215,0,0.3); border-color: gold;">
-                    ▶️ Putar File Saya
-                </button>
-            </div>
-            
-            <input type="range" id="volSlider" style="width:100%" min="0" max="100" value="50" oninput="changeVolume(this.value)">
-        </div>
-
-        <div class="spotify-wrapper">
-             <div style="font-size:0.8rem; margin-bottom:15px; opacity:0.8;">SPOTIFY PLAYLIST</div>
-             
-             <iframe 
-                style="border-radius:12px" 
+            <iframe 
+                style="border-radius:12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);" 
                 src="https://open.spotify.com/embed/playlist/0Cgy2qcZojt85r610h8bGP?utm_source=generator4" 
                 width="100%" 
-                height="152" 
+                height="352" 
                 frameBorder="0" 
                 allowfullscreen="" 
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
                 loading="lazy">
             </iframe>
-            
+
+            <a href="https://open.spotify.com/playlist/0Cgy2qcZojt85r610h8bGP?si=59d2fa9077ac42d1&pt=f32a9f5f5b373107f3f587aea627414c" target="_blank" class="btn-collab">
+                ➕ Join Collab Playlist
+            </a>
+            <div style="font-size:0.7rem; opacity:0.7; text-align:center;">
+                Klik tombol di atas untuk menambahkan lagu favoritmu ke playlist ini!
+            </div>
         </div>
 
     </div>
 
     <script>
-        // --- 1. AUDIO UTAMA (LAGU SEMPURNA) ---
-        const audioSempurna = new Audio('sempurna.mp3');
-        audioSempurna.loop = true;
-        let isSempurnaPlaying = false;
+        // --- LOGIC (Sama seperti sebelumnya) ---
+        const audioSempurna = new Audio('sempurna.mp3'); audioSempurna.loop = true; let isSempurnaPlaying = false;
+        function toggleSempurna() { const btn = document.getElementById('btn-sempurna'); if (isSempurnaPlaying) { audioSempurna.pause(); btn.classList.remove('active'); btn.textContent = "🎵 Lagu Sempurna"; } else { audioSempurna.play().catch(e => alert("File sempurna.mp3 tidak ditemukan!")); btn.classList.add('active'); btn.textContent = "⏸️ Lagu Sempurna"; } isSempurnaPlaying = !isSempurnaPlaying; }
 
-        function toggleSempurna() {
-            const btn = document.getElementById('btn-sempurna');
-            
-            if (isSempurnaPlaying) {
-                audioSempurna.pause();
-                btn.classList.remove('active');
-                btn.textContent = "🎵 Lagu Sempurna";
-            } else {
-                audioSempurna.play().catch(e => alert("File sempurna.mp3 tidak ditemukan!"));
-                btn.classList.add('active');
-                btn.textContent = "⏸️ Lagu Sempurna";
-            }
-            isSempurnaPlaying = !isSempurnaPlaying;
-        }
+        const audioRain = new Audio('https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg'); audioRain.loop = true; let isRainPlaying = false;
+        function toggleRain() { const btn = document.getElementById('btn-rain'); if (isRainPlaying) { audioRain.pause(); btn.classList.remove('active'); } else { audioRain.play(); btn.classList.add('active'); } isRainPlaying = !isRainPlaying; }
 
-        // --- 2. AUDIO HUJAN ---
-        const audioRain = new Audio('https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg');
-        audioRain.loop = true;
-        let isRainPlaying = false;
+        let audioCustom = new Audio(); audioCustom.loop = true; let isCustomPlaying = false;
+        function handleFileUpload(input) { const file = input.files[0]; if (file) { audioCustom.src = URL.createObjectURL(file); document.getElementById('uploadLabel').style.display = 'none'; const btnCustom = document.getElementById('btn-custom'); btnCustom.style.display = 'block'; btnCustom.textContent = "▶️ Putar: " + file.name.substring(0, 15) + "..."; isCustomPlaying = false; } }
+        function toggleCustomAudio() { const btn = document.getElementById('btn-custom'); if (isCustomPlaying) { audioCustom.pause(); btn.textContent = btn.textContent.replace("⏸️", "▶️"); btn.classList.remove('active'); } else { audioCustom.play(); btn.textContent = btn.textContent.replace("▶️", "⏸️"); btn.classList.add('active'); } isCustomPlaying = !isCustomPlaying; }
+        function changeVolume(val) { const decimalVol = val / 100; audioRain.volume = decimalVol; audioCustom.volume = decimalVol; audioSempurna.volume = decimalVol; }
 
-        function toggleRain() {
-            const btn = document.getElementById('btn-rain');
-            if (isRainPlaying) {
-                audioRain.pause();
-                btn.classList.remove('active');
-            } else {
-                audioRain.play();
-                btn.classList.add('active');
-            }
-            isRainPlaying = !isRainPlaying;
-        }
+        let timeLeft; let isRunning = false; let isFocusMode = true; let timerId = null;
+        const timerDisplay = document.getElementById('timer'); const startBtn = document.getElementById('startBtn'); const modeText = document.getElementById('mode-text'); const focusInput = document.getElementById('focusTime'); const breakInput = document.getElementById('breakTime');
 
-        // --- 3. CUSTOM AUDIO (UPLOAD) ---
-        let audioCustom = new Audio();
-        audioCustom.loop = true;
-        let isCustomPlaying = false;
+        function init() { timeLeft = focusInput.value * 60; updateDisplay(); }
+        function updateDisplay() { const m = Math.floor(timeLeft / 60).toString().padStart(2, '0'); const s = (timeLeft % 60).toString().padStart(2, '0'); timerDisplay.textContent = `${m}:${s}`; document.title = `${m}:${s} - ${isFocusMode ? 'Fokus' : 'Istirahat'}`; }
+        function toggleTimer() { if (isRunning) { clearInterval(timerId); startBtn.textContent = "Lanjut"; isRunning = false; } else { startTimerInterval(); startBtn.textContent = "Pause"; isRunning = true; } }
+        function startTimerInterval() { clearInterval(timerId); timerId = setInterval(() => { if (timeLeft > 0) { timeLeft--; updateDisplay(); } else { switchMode(); } }, 1000); }
+        function switchMode() { playNotificationSound(); isFocusMode = !isFocusMode; if (isFocusMode) { timeLeft = focusInput.value * 60; modeText.textContent = "🔥 Mode Fokus"; modeText.style.background = "rgba(0,0,0,0.2)"; } else { timeLeft = breakInput.value * 60; modeText.textContent = "☕ Waktunya Istirahat"; modeText.style.background = "rgba(105, 240, 174, 0.4)"; } updateDisplay(); startBtn.textContent = "Pause"; isRunning = true; startTimerInterval(); }
+        function resetTimer() { clearInterval(timerId); isRunning = false; startBtn.textContent = "Mulai"; isFocusMode = true; modeText.textContent = "🔥 Mode Fokus"; timeLeft = focusInput.value * 60; updateDisplay(); }
 
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (file) {
-                audioCustom.src = URL.createObjectURL(file);
-                document.getElementById('uploadLabel').style.display = 'none';
-                const btnCustom = document.getElementById('btn-custom');
-                btnCustom.style.display = 'block';
-                btnCustom.textContent = "▶️ Putar: " + file.name.substring(0, 15) + "...";
-                isCustomPlaying = false;
-            }
-        }
-
-        function toggleCustomAudio() {
-            const btn = document.getElementById('btn-custom');
-            if (isCustomPlaying) {
-                audioCustom.pause();
-                btn.textContent = btn.textContent.replace("⏸️", "▶️");
-                btn.classList.remove('active');
-            } else {
-                audioCustom.play();
-                btn.textContent = btn.textContent.replace("▶️", "⏸️");
-                btn.classList.add('active');
-            }
-            isCustomPlaying = !isCustomPlaying;
-        }
-
-        // --- 4. VOLUME CONTROL (SEMUA AUDIO) ---
-        function changeVolume(val) {
-            const decimalVol = val / 100;
-            audioRain.volume = decimalVol;
-            audioCustom.volume = decimalVol;
-            audioSempurna.volume = decimalVol;
-        }
-
-        // --- 5. LOGIC TIMER ---
-        let timeLeft;
-        let isRunning = false;
-        let isFocusMode = true;
-        let timerId = null;
-
-        const timerDisplay = document.getElementById('timer');
-        const startBtn = document.getElementById('startBtn');
-        const modeText = document.getElementById('mode-text');
-        const focusInput = document.getElementById('focusTime');
-        const breakInput = document.getElementById('breakTime');
-
-        function init() {
-            timeLeft = focusInput.value * 60;
-            updateDisplay();
-        }
-
-        function updateDisplay() {
-            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-            const s = (timeLeft % 60).toString().padStart(2, '0');
-            timerDisplay.textContent = `${m}:${s}`;
-            document.title = `${m}:${s} - ${isFocusMode ? 'Fokus' : 'Istirahat'}`;
-        }
-
-        function toggleTimer() {
-            if (isRunning) {
-                clearInterval(timerId);
-                startBtn.textContent = "Lanjut";
-                isRunning = false;
-            } else {
-                startTimerInterval();
-                startBtn.textContent = "Pause";
-                isRunning = true;
-            }
-        }
-
-        function startTimerInterval() {
-            clearInterval(timerId);
-            timerId = setInterval(() => {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    updateDisplay();
-                } else {
-                    switchMode();
-                }
-            }, 1000);
-        }
-
-        function switchMode() {
-            playNotificationSound();
-            isFocusMode = !isFocusMode;
-            if (isFocusMode) {
-                timeLeft = focusInput.value * 60;
-                modeText.textContent = "🔥 Mode Fokus";
-                modeText.style.background = "rgba(0,0,0,0.2)";
-            } else {
-                timeLeft = breakInput.value * 60;
-                modeText.textContent = "☕ Waktunya Istirahat";
-                modeText.style.background = "rgba(105, 240, 174, 0.4)";
-            }
-            updateDisplay();
-            startBtn.textContent = "Pause";
-            isRunning = true;
-            startTimerInterval();
-        }
-
-        function resetTimer() {
-            clearInterval(timerId);
-            isRunning = false;
-            startBtn.textContent = "Mulai";
-            isFocusMode = true;
-            modeText.textContent = "🔥 Mode Fokus";
-            timeLeft = focusInput.value * 60;
-            updateDisplay();
-        }
-
-        function playNotificationSound() {
+        function playNotificationSound() { 
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, ctx.currentTime); 
-            gain.gain.setValueAtTime(0.1, ctx.currentTime);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.2);
-            setTimeout(() => {
-                const osc2 = ctx.createOscillator();
-                const gain2 = ctx.createGain();
-                osc2.connect(gain2);
-                gain2.connect(ctx.destination);
-                osc2.frequency.setValueAtTime(880, ctx.currentTime);
-                gain2.gain.setValueAtTime(0.1, ctx.currentTime);
-                osc2.start();
-                osc2.stop(ctx.currentTime + 0.2);
-            }, 300);
+            function playTone(freq, type, startTime, duration) { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime); gain.gain.setValueAtTime(0.3, startTime); gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration); osc.start(startTime); osc.stop(startTime + duration); }
+            const now = ctx.currentTime; playTone(880, 'square', now, 0.2); playTone(880, 'square', now + 0.3, 0.2); playTone(880, 'square', now + 0.6, 0.4); 
         }
 
         focusInput.addEventListener('change', () => { if(!isRunning && isFocusMode) init(); });
-
-        // --- TASK LIST ---
-        const taskInput = document.getElementById('taskInput');
-        const taskList = document.getElementById('taskList');
+        const taskInput = document.getElementById('taskInput'); const taskList = document.getElementById('taskList');
         taskInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
-
-        function addTask() {
-            if (taskInput.value === '') return;
-            const li = document.createElement('li');
-            li.className = 'task-item';
-            li.innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
-                    <button onclick="toggleTask(this)" style="background:none; border:none; color:#00ff88; font-size:1.2rem;">○</button>
-                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${taskInput.value}</span>
-                </div>
-                <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#ff6b6b;">✕</button>
-            `;
-            taskList.prepend(li);
-            taskInput.value = '';
-        }
-
-        function toggleTask(btn) {
-            const item = btn.parentElement.parentElement;
-            item.classList.toggle('completed');
-            btn.textContent = item.classList.contains('completed') ? '●' : '○';
-        }
+        function addTask() { if (taskInput.value === '') return; const li = document.createElement('li'); li.className = 'task-item'; li.innerHTML = `<div style="display:flex; align-items:center; gap:10px; overflow:hidden;"><button onclick="toggleTask(this)" style="background:none; border:none; color:#00ff88; font-size:1.2rem;">○</button><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${taskInput.value}</span></div><button onclick="this.parentElement.remove()" style="background:none; border:none; color:#ff6b6b;">✕</button>`; taskList.prepend(li); taskInput.value = ''; }
+        function toggleTask(btn) { const item = btn.parentElement.parentElement; item.classList.toggle('completed'); btn.textContent = item.classList.contains('completed') ? '●' : '○'; }
 
         init();
     </script>
