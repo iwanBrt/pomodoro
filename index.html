@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pomodoro Lofi Tube</title>
+    <title>Pomodoro Sempurna + Spotify</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -44,7 +44,12 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center;
+            max-height: 95vh;
+            overflow-y: auto;
         }
+
+        .container::-webkit-scrollbar { width: 5px; }
+        .container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
 
         /* --- TIMER --- */
         .status-badge {
@@ -125,6 +130,16 @@
             padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.9rem;
         }
 
+        /* --- SPOTIFY SECTION --- */
+        .spotify-wrapper {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+        iframe {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
         /* --- TASKS --- */
         .task-input-box { display: flex; gap: 8px; margin-bottom: 15px; }
         #taskInput {
@@ -138,16 +153,9 @@
             border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;
         }
         .task-item.completed span { text-decoration: line-through; opacity: 0.6; }
-
-        /* Hidden YouTube Container */
-        #youtube-player-container { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
     </style>
 </head>
 <body>
-
-    <div id="youtube-player-container">
-        <div id="player"></div>
-    </div>
 
     <div class="container">
         <div class="status-badge" id="mode-text">🔥 Mode Fokus</div>
@@ -176,13 +184,13 @@
         <ul class="task-list" id="taskList"></ul>
 
         <div class="audio-section">
-            <div style="font-size:0.8rem; margin-bottom:10px; opacity:0.8;">AUDIO ZONE</div>
+            <div style="font-size:0.8rem; margin-bottom:10px; opacity:0.8;">AUDIO FOKUS</div>
             
             <div class="audio-controls">
                 <button class="audio-btn" id="btn-rain" onclick="toggleRain()">🌧️ Hujan Deras</button>
-                <button class="audio-btn" id="btn-lofi" onclick="toggleYoutubeMusic()">🎧 Youtube Lofi</button>
+                <button class="audio-btn" id="btn-sempurna" onclick="toggleSempurna()">🎵 Lagu Sempurna</button>
                 
-                <label for="customFile" class="upload-btn-label" id="uploadLabel">📂 File Sendiri</label>
+                <label for="customFile" class="upload-btn-label" id="uploadLabel">📂 Upload File Sendiri</label>
                 <input type="file" id="customFile" accept="audio/*" style="display:none" onchange="handleFileUpload(this)">
                 
                 <button class="audio-btn" id="btn-custom" onclick="toggleCustomAudio()" style="display:none; grid-column: span 2; background: rgba(255,215,0,0.3); border-color: gold;">
@@ -192,64 +200,47 @@
             
             <input type="range" id="volSlider" style="width:100%" min="0" max="100" value="50" oninput="changeVolume(this.value)">
         </div>
+
+        <div class="spotify-wrapper">
+             <div style="font-size:0.8rem; margin-bottom:15px; opacity:0.8;">SPOTIFY PLAYLIST</div>
+             
+             <iframe 
+                style="border-radius:12px" 
+                src="https://open.spotify.com/embed/playlist/0Cgy2qcZojt85r610h8bGP?utm_source=generator4" 
+                width="100%" 
+                height="152" 
+                frameBorder="0" 
+                allowfullscreen="" 
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                loading="lazy">
+            </iframe>
+            
+        </div>
+
     </div>
 
     <script>
-        // --- 1. YOUTUBE API SETUP ---
-        // Kita menggunakan YouTube IFrame API agar bisa memutar link YouTube di background
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        // --- 1. AUDIO UTAMA (LAGU SEMPURNA) ---
+        const audioSempurna = new Audio('sempurna.mp3');
+        audioSempurna.loop = true;
+        let isSempurnaPlaying = false;
 
-        var player;
-        var isYoutubeReady = false;
-        var isYoutubePlaying = false;
-
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '200',
-                width: '200',
-                videoId: 'uaNrFn17YtI', // ID Video dari Link yang kamu kasih
-                playerVars: {
-                    'playsinline': 1,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': 'uaNrFn17YtI' // Diperlukan agar looping bekerja
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            isYoutubeReady = true;
-            event.target.setVolume(50); // Volume awal 50%
-        }
-
-        function toggleYoutubeMusic() {
-            const btn = document.getElementById('btn-lofi');
+        function toggleSempurna() {
+            const btn = document.getElementById('btn-sempurna');
             
-            if (!isYoutubeReady) {
-                alert("Tunggu sebentar, memuat YouTube...");
-                return;
-            }
-
-            if (isYoutubePlaying) {
-                player.pauseVideo();
+            if (isSempurnaPlaying) {
+                audioSempurna.pause();
                 btn.classList.remove('active');
-                btn.textContent = "🎧 Youtube Lofi";
+                btn.textContent = "🎵 Lagu Sempurna";
             } else {
-                player.playVideo();
+                audioSempurna.play().catch(e => alert("File sempurna.mp3 tidak ditemukan!"));
                 btn.classList.add('active');
-                btn.textContent = "⏸️ Youtube Lofi";
+                btn.textContent = "⏸️ Lagu Sempurna";
             }
-            isYoutubePlaying = !isYoutubePlaying;
+            isSempurnaPlaying = !isSempurnaPlaying;
         }
 
-        // --- 2. AUDIO HUJAN (SUMBER BARU) ---
-        // Menggunakan Google Sounds agar lebih stabil
+        // --- 2. AUDIO HUJAN ---
         const audioRain = new Audio('https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg');
         audioRain.loop = true;
         let isRainPlaying = false;
@@ -260,13 +251,13 @@
                 audioRain.pause();
                 btn.classList.remove('active');
             } else {
-                audioRain.play().catch(e => alert("Klik di layar dulu agar audio bisa jalan!"));
+                audioRain.play();
                 btn.classList.add('active');
             }
             isRainPlaying = !isRainPlaying;
         }
 
-        // --- 3. CUSTOM AUDIO ---
+        // --- 3. CUSTOM AUDIO (UPLOAD) ---
         let audioCustom = new Audio();
         audioCustom.loop = true;
         let isCustomPlaying = false;
@@ -297,22 +288,15 @@
             isCustomPlaying = !isCustomPlaying;
         }
 
-        // --- 4. VOLUME CONTROL (SYNC SEMUA) ---
+        // --- 4. VOLUME CONTROL (SEMUA AUDIO) ---
         function changeVolume(val) {
-            // Val adalah 0 sampai 100
-            
-            // 1. Set volume Hujan & Custom (butuh range 0.0 - 1.0)
             const decimalVol = val / 100;
             audioRain.volume = decimalVol;
             audioCustom.volume = decimalVol;
-
-            // 2. Set volume YouTube (butuh range 0 - 100)
-            if (isYoutubeReady) {
-                player.setVolume(val);
-            }
+            audioSempurna.volume = decimalVol;
         }
 
-        // --- 5. LOGIC TIMER (SAMA SEPERTI SEBELUMNYA) ---
+        // --- 5. LOGIC TIMER ---
         let timeLeft;
         let isRunning = false;
         let isFocusMode = true;
